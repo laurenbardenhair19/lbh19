@@ -187,11 +187,11 @@ for (lang in keys(langcount)) {
 
 MiddleEastLanguages <- list("Arabic")
 EuropeanLanguages <- list("Spanish", "German", "French")
-SlavicLanguages <- list("Russian", "Ukrainian")
+EasternEuropeanLanguages <- list("Russian", "Ukrainian", "Czech")
 
 langcountdata <- data.frame("lang" = keys(langcount), "count" = values(langcount))
 langcountdata[langcountdata$lang %in% MiddleEastLanguages, "region"] <- 1
 langcountdata[langcountdata$lang %in% EuropeanLanguages, "region"] <- 2
-langcountdata[langcountdata$lang %in% SlavicLanguages, "region"] <- 3
+langcountdata[langcountdata$lang %in% EasternEuropeanLanguages, "region"] <- 3
 
 
