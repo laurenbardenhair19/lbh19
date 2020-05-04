@@ -7,6 +7,9 @@ library(euvsdisinfoR)
 #install.packages("hash")
 library(hash)
 
+#Load dplyr for visulization preparation
+library(dplyr)
+
 #Run API, will take some time to download everything
 d <- disinfo()
 alldata <- d %>%
@@ -16,12 +19,12 @@ get_creative_works(pages="all")
 #Flatten the data by pulling from 'all data' frame and then the sub dataframes to put desired variables into one list
 flat_data <- list()
 flat_data$id <- alldata$claims$claims_id
-flat_data$date <- alldata$claims$claim_published
 flat_data$keyword_ids <- alldata$claims$keywords
 flat_data$location_ids <- alldata$claims$content_locations
 flat_data$title <- alldata$reviews$claim_reviewed
 flat_data$creativeworks_ids <- alldata$claims$appearances
-
+flat_data$year <- substr(alldata$claims$claim_published,1, 4)
+flat_data$month <- substr(alldata$claims$claim_published,6, 7)
 
 #I am specifically looking to make the data more manageable by linking keywords and keyword ids, locations and location ids, languages and language ids, and dates together so analysis is easier. 
 
@@ -162,7 +165,7 @@ convert_creativeworks_id_list <- function(cw, convert_func = convert_creativewor
 }
 
 flat_data$languages <- lapply(flat_data$creativeworks_ids, convert_creativeworks_id_list)
-flat_data$languages <- unlist(flat_data$languages)
+flat_data$languages <- flat_data$languages
 
 
 langcount <- hash()
@@ -192,6 +195,28 @@ EasternEuropeanLanguages <- list("Russian", "Ukrainian", "Czech")
 langcountdata <- data.frame("lang" = keys(langcount), "count" = values(langcount))
 langcountdata[langcountdata$lang %in% MiddleEastLanguages, "region"] <- 1
 langcountdata[langcountdata$lang %in% EuropeanLanguages, "region"] <- 2
-langcountdata[langcountdata$lang %in% EasternEuropeanLanguages, "region"] <- 3
+langcountdata[langcountdata$lang %in% EasternEuropeanLanguages , "region"] <- 3
 
 
+### Ukraine Count by Year ###
+match_country_location <-function(locs, country="None") {
+  return(country %in% locs)
+}
+
+match_language <-function(langs, language="None") {
+  return(language %in% langs)
+}
+
+flat_data$ukr_loc <- lapply(flat_data$locations, country="Ukraine", match_country_location)
+flat_data$latvia_loc <- lapply(flat_data$locations, country="Latvia", match_country_location)
+flat_data$rus_lang <- lapply(flat_data$languages, language="Russian", match_language)
+flat_data$ger_lang <- lapply(flat_data$languages, language="German", match_language)
+
+
+dft <- as.tbl(data.frame("year"=flat_data$year, "month"=flat_data$month, "ukr"=unlist(flat_data$ukr_loc), "latvia"=unlist(flat_data$latvia_loc), "russian"=unlist(flat_data$rus_lang), "german"=unlist(flat_data$ger_lang)))
+
+dft %>% filter(latvia == TRUE) %>% group_by(year) %>% tally()
+dft %>% filter(russian == TRUE) %>% group_by(year) %>% tally()
+dft %>% filter(german == TRUE) %>% group_by(year) %>% tally()
+
+dft %>% group_by(year) %>% tally()
