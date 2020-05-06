@@ -10,6 +10,14 @@ library(hash)
 #Load dplyr for visulization preparation
 library(dplyr)
 
+#
+#install.packages("tidyverse")
+library(tidyverse)
+
+#Load ggplot for datavisualizations
+library(ggplot2)
+
+
 #Run API, will take some time to download everything
 d <- disinfo()
 alldata <- d %>%
@@ -165,14 +173,14 @@ convert_creativeworks_id_list <- function(cw, convert_func = convert_creativewor
 }
 
 flat_data$languages <- lapply(flat_data$creativeworks_ids, convert_creativeworks_id_list)
-flat_data$languages <- flat_data$languages
+flat_data$all_languages <- unlist(flat_data$languages)
 
-
+#Here I am again generating a dictionary/hash table that displays all the languages and the number of times they have been a published language for the disinformation articles. 
 langcount <- hash()
 
 for (langs in flat_data$languages) {
-  for (lang in langs) {
-    print(lang)
+  for (lang in unlist(langs)) {
+    #print(lang)
     if (is.null(langcount[[lang]])) {
       langcount[[lang]] <- 1
     } else{
@@ -186,19 +194,47 @@ for (lang in keys(langcount)) {
   cat(lang, ":",  langcount[[lang]], "\n")
 }
 
-##Again there are too many languages here, so I will group them by region, and then also look at the languages with total counts in the upper quartile. This will allow me to look at which languages are targeted the most. 
+ 
 
+####------ANALYZING THE DATA-----####
+
+
+##Again there are too many languages here, so I will group them by region. This will allow me to look at which areas of the world are targeted the most.
 MiddleEastLanguages <- list("Arabic")
-EuropeanLanguages <- list("Spanish", "German", "French")
-EasternEuropeanLanguages <- list("Russian", "Ukrainian", "Czech")
+USandUK <- list("English")
+WesternEuropeanLanguages <- list("Spanish", "German", "French", "Italian", "Finnish", "Spanish, Castilian", "Swedish")
+EasternEuropeanLanguages <- list("Russian", "Ukrainian", "Czech", "Belarusian", "blr", "bgr", "Bosnian", "Croation", "Estonian", "Latvian", "Hungarian", "Lithuanian", "ltu", "lva", "Macedonian", "mda", "mne", "Moldavian", "Polish", "rou", "Serbian", "srb")
+CentralAsiaLanguages <- list("Abkhazian", "Armenian", "Azerbaijani")
 
 langcountdata <- data.frame("lang" = keys(langcount), "count" = values(langcount))
-langcountdata[langcountdata$lang %in% MiddleEastLanguages, "region"] <- 1
-langcountdata[langcountdata$lang %in% EuropeanLanguages, "region"] <- 2
-langcountdata[langcountdata$lang %in% EasternEuropeanLanguages , "region"] <- 3
+langcountdata[langcountdata$lang %in% MiddleEastLanguages, "region"] <- "Middle East"
+langcountdata[langcountdata$lang %in% EuropeanLanguages, "region"] <- "Western Europe"
+langcountdata[langcountdata$lang %in% EasternEuropeanLanguages , "region"] <- "Eastern Europe"
+langcountdata[langcountdata$lang %in% USandUK , "region"] <- "USA UK"
+langcountdata[langcountdata$lang %in% CentralAsiaLanguages , "region"] <- "Central Asia"
+
+#Just looking at the numbers for the new variable 'region'. This will tell me the frequency with which different regions have been targeted since 2015. 
+dft_lang <- as.tbl(langcountdata)
+#Here I'm using dyplr to summarise a subset of the data (in this case, all the regions)
+dft_lang %>% group_by(region) %>% summarise(count=sum(count))
+#dropping the "NA" observations here 
+dft_lang <- dft_lang %>% drop_na()
+langfreq <- dft_lang %>% group_by(region) %>% summarise(count=sum(count))
 
 
-### Ukraine Count by Year ###
+###----- Data Visualization (Pie Chart) for frequency of language use by language region ---##
+
+piepercent<- round(100*langfreq$region/sum(langfreq), 1)
+regionspie <-pie(langfreq$count, labels = piepercent, clockwise = TRUE, radius = 1,
+    main="Pie Chart of Region Frequencies", legend("topright", c("Middle East", "Western Europe", "Eastern Europe", "Central Asia", "US and UK")))
+
+
+print(regionspie)
+
+
+## Back to the other parts of the analysis...
+
+### Now I want to look at the number of references per year, per keyword, per location/region, or published language over time ###
 match_country_location <-function(locs, country="None") {
   return(country %in% locs)
 }
@@ -207,16 +243,35 @@ match_language <-function(langs, language="None") {
   return(language %in% langs)
 }
 
+#Below, the lines are going through all the data (for either locations or languages) looking for matches to the specified string term, espcially in the observations with multiple locations or languages. It's putting the findings in a flat data format. 
 flat_data$ukr_loc <- lapply(flat_data$locations, country="Ukraine", match_country_location)
 flat_data$latvia_loc <- lapply(flat_data$locations, country="Latvia", match_country_location)
 flat_data$rus_lang <- lapply(flat_data$languages, language="Russian", match_language)
-flat_data$ger_lang <- lapply(flat_data$languages, language="German", match_language)
+flat_data$arb_lang <- lapply(flat_data$languages, language="Arabic", match_language)
+flat_data$eng_lang <- lapply(flat_data$languages, language="English", match_language)
 
+# Now I'm creating a new dataframe for these new variables using dyplr. 
+dft <- as.tbl(data.frame("year"=unlist(flat_data$year), "month"=unlist(flat_data$month), "ukr"=unlist(flat_data$ukr_loc), "latvia"=unlist(flat_data$latvia_loc), "russian"=unlist(flat_data$rus_lang), "arabic"=unlist(flat_data$arb_lang), "english"=unlist(flat_data$eng_lang)))
 
-dft <- as.tbl(data.frame("year"=flat_data$year, "month"=flat_data$month, "ukr"=unlist(flat_data$ukr_loc), "latvia"=unlist(flat_data$latvia_loc), "russian"=unlist(flat_data$rus_lang), "german"=unlist(flat_data$ger_lang)))
-
+#Here I am generating dummy variables for the countries or languages I want to review over time and then counting (tallying) the number of times the dummy turns up 1 in each year
 dft %>% filter(latvia == TRUE) %>% group_by(year) %>% tally()
 dft %>% filter(russian == TRUE) %>% group_by(year) %>% tally()
-dft %>% filter(german == TRUE) %>% group_by(year) %>% tally()
+dft %>% filter(arabic == TRUE) %>% group_by(year) %>% tally()
+dft %>% filter(english == TRUE) %>% group_by(year) %>% tally()
+dft %>% filter(ukr == TRUE) %>% group_by(year) %>% tally()
 
+
+#Below, I group the dataframe by year acros each dummy variable 
 dft %>% group_by(year) %>% tally()
+dft_year <-dft %>% group_by(year) %>% tally()
+
+
+####----DATA VISUALIZATION ---- this is indicating the number of times Ukraine was mentioned in a disinformation article each year since 2015. 
+
+ukrainetime<-ggplot(data=dft_year, aes(x=dft_year$year, y=dft_year$n)) +
+  geom_bar(stat="identity", fill="steelblue")+
+  theme_minimal()
+#Now I will relabel the axis to 'Year' and 'Number of Articles'. I also add a heading. 
+newukrainetime <- ukrainetime + ggtitle("Disinformation Articles About Ukraine by Year") +
+  xlab("Year (2015-2019)") + ylab("Number of Articles") 
+print(newukrainetime)
