@@ -204,18 +204,59 @@ for (lang in keys(langcount)) {
 
 ## (KEYWORDS) There are too many keywords to say something meaningful with the data. Thus, I will generate general 'topic' categories where multiple related keywords can be grouped and analyzed. 
 
-RevisionistHisroty <- list("Adolf Hitler", "Historical Revisionism", "Molotov-Ribbentrop Pact", "Nazi/Fascist", "USSR", "WWII")
+RevisionistHistory <- list("Adolf Hitler", "Historical Revisionism", "Molotov-Ribbentrop Pact", "Nazi/Fascist", "USSR", "WWII")
 EasternEurope <- list("Baltic States", "Colour revolutions", "Eastern Partnership")
 Ukraine <- list("Abandoned Ukraine", "Azov Sea", "Crimea", "Crimean Tartars", "Donbas", "Eastern Ukraine", "Euromaidan", "illegal annexation", "Kerch", "Minsk agreements", "Ukraine", "Ukrainian disintegration", "Ukrainian statehood", "Volodymyr Zelensky", "War in Ukraine")
+Russia <- list("Anti-Russian", "Destabilising Russia", "Encircling Russia", "Ethnic Russians", "Russian expansionism", "Russian language", "Russian superiority", "Russian world", "Russo-Georgian War", "Russophobia", "Vladimir Putin")
+EU_NATO <- list("AA/DCFTA", "Brexit", "EU disintegration", "EU elections 2019", "EU/NATO enlargement", "Euro-scepticism", "Europe", "European Parliament", "European Union", "European Values", "migration", "Migration crisis", "NATO", "Refugees")
+US <- list("Barack Obama", "CIA", "Deep state", "Donald Trump", "Hillary Clinton", "INF Treaty", "Robert Muelller", "US", "US presence in Europe")
+Elections <- list("election meddling", "Elections", "Manipulated elections/referendum")
+Syria_ME <- list("Bashar al-Assad", "Biological weapons", "Chemical weapons/attack", "Daesh", "Douma", "Middle East", "Muslim/Islam", "Syrian War", "White Helmets")
+
+#Now I will generate a dataframe for these categories. The new category for these variables will be called "Topics". 
+topiccountdata <- data.frame("key" = keys(keywordcount), "count" = values(keywordcount))
+print(topiccountdata)
+topiccountdata[topiccountdata$key %in% RevisionistHistory, "topic"] <- "Revisionist History"
+topiccountdata[topiccountdata$key %in% EasternEurope, "topic"] <- "Eastern Europe"
+topiccountdata[topiccountdata$key %in% Ukraine, "topic"] <- "Ukraine"
+topiccountdata[topiccountdata$key %in% Russia, "topic"] <- "Russia"
+topiccountdata[topiccountdata$key %in% EU_NATO, "topic"] <- "EU NATO"
+topiccountdata[topiccountdata$key %in% US, "topic"] <- "US"
+topiccountdata[topiccountdata$key %in% Elections, "topic"] <- "Elections"
+topiccountdata[topiccountdata$key %in% Syria_ME, "topic"] <- "Syria and the Middle East"
+
+#I want to look at the frequency by topic by first using the tbl function
+dft_topic <- as.tbl(topiccountdata)
+print(dft_topic)
+
+#Now I want to group by region once the "NA" responses are dropped
+topic_freq <- dft_topic %>% drop_na()
+topic_freq_filtered <- (topic_freq %>% group_by(topic) %>% summarise(count=sum(count)))
+
+#####-----Data Visualization-----####
+
+#Here I want to generate a pie chart that shows the frequency of each topic in relation to all the topics. First I calculate the percents
+piepercentt<- round(100*topic_freq_filtered$count/sum(topic_freq_filtered$count), 1)
 
 
-## (LANGUGAGES) Again there are too many languages here, so I will group them by region. This will allow me to look at which areas of the world are targeted the most.
+# I used the Brewer color package to give me more color selection in my visualizations
+display.brewer.all()
+brewer.pal(n = 8, name = 'Paired')
+
+
+#Here I use the pie chart function
+topicspie <-pie(piepercentt, labels = piepercentt, clockwise = TRUE, radius = .5, main="Pie Chart of Topic Frequencies by Percent", col=brewer.pal(n=8, name ="Paired"))
+legend("bottomright", c("Eastern Europe", "Elections", "EU NATO", "Revisionist History", "Russia", "Syria and the Middle East", "Ukraine", "US"), fill=brewer.pal(n=8, name = "Paired"), cex=.7) 
+
+
+## ----(LANGUGAGES) Again there are too many languages here, so I will group them by region. This will allow me to look at which areas of the world are targeted the most.
 MiddleEastLanguages <- list("Arabic")
 USandUK <- list("English")
 WesternEuropeanLanguages <- list("Spanish", "German", "French", "Italian", "Finnish", "Spanish, Castilian", "Swedish")
 EasternEuropeanLanguages <- list("Russian", "Ukrainian", "Czech", "Belarusian", "blr", "bgr", "Bosnian", "Croation", "Estonian", "Latvian", "Hungarian", "Lithuanian", "ltu", "lva", "Macedonian", "mda", "mne", "Moldavian", "Polish", "rou", "Serbian", "srb")
 CentralAsiaLanguages <- list("Abkhazian", "Armenian", "Azerbaijani")
 
+#generate a dataframe for these categories. The categories will be listed in new variable 'region'. 
 langcountdata <- data.frame("lang" = keys(langcount), "count" = values(langcount))
 langcountdata[langcountdata$lang %in% MiddleEastLanguages, "region"] <- "Middle East"
 langcountdata[langcountdata$lang %in% EuropeanLanguages, "region"] <- "Western Europe"
@@ -251,7 +292,9 @@ legend("topright", c("Central Asia", "Eastern Europe", "Middle East", "US and UK
 
 ## Back to the other parts of the analysis...
 
-### Now I want to look at the number of references per year, per keyword, per location/region, or published language over time ###
+### ---ANALYSIS BY YEAR----- Now I want to look at the number of references per year, per keyword, per location/region, or published language over time ###
+
+# Here I create two functions that take one observation and assign a true or false value if the condition is met (whether it matches the country or language given). 
 match_country_location <-function(locs, country="None") {
   return(country %in% locs)
 }
