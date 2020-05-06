@@ -1,6 +1,7 @@
 #Install API and load
 #install.packages("devtools")
 #devtools::install_github("corriebar/euvsdisinfoR")
+#install.packages("RColorBrewer")
 library(euvsdisinfoR)
 
 #Load some other libraries that will be useful
@@ -16,6 +17,9 @@ library(tidyverse)
 
 #Load ggplot for datavisualizations
 library(ggplot2)
+
+#Color scheme for data visualizations 
+library(RColorBrewer)
 
 
 #Run API, will take some time to download everything
@@ -198,8 +202,14 @@ for (lang in keys(langcount)) {
 
 ####------ANALYZING THE DATA-----####
 
+## (KEYWORDS) There are too many keywords to say something meaningful with the data. Thus, I will generate general 'topic' categories where multiple related keywords can be grouped and analyzed. 
 
-##Again there are too many languages here, so I will group them by region. This will allow me to look at which areas of the world are targeted the most.
+RevisionistHisroty <- list("Adolf Hitler", "Historical Revisionism", "Molotov-Ribbentrop Pact", "Nazi/Fascist", "USSR", "WWII")
+EasternEurope <- list("Baltic States", "Colour revolutions", "Eastern Partnership")
+Ukraine <- list("Abandoned Ukraine", "Azov Sea", "Crimea", "Crimean Tartars", "Donbas", "Eastern Ukraine", "Euromaidan", "illegal annexation", "Kerch", "Minsk agreements", "Ukraine", "Ukrainian disintegration", "Ukrainian statehood", "Volodymyr Zelensky", "War in Ukraine")
+
+
+## (LANGUGAGES) Again there are too many languages here, so I will group them by region. This will allow me to look at which areas of the world are targeted the most.
 MiddleEastLanguages <- list("Arabic")
 USandUK <- list("English")
 WesternEuropeanLanguages <- list("Spanish", "German", "French", "Italian", "Finnish", "Spanish, Castilian", "Swedish")
@@ -224,12 +234,19 @@ langfreq <- dft_lang %>% group_by(region) %>% summarise(count=sum(count))
 
 ###----- Data Visualization (Pie Chart) for frequency of language use by language region ---##
 
-piepercent<- round(100*langfreq$region/sum(langfreq), 1)
-regionspie <-pie(langfreq$count, labels = piepercent, clockwise = TRUE, radius = 1,
-    main="Pie Chart of Region Frequencies", legend("topright", c("Middle East", "Western Europe", "Eastern Europe", "Central Asia", "US and UK")))
+#Caluclate the percents and figure out the order of regions that needs to be listed in the legend
+piepercent<- round(100*langfreq$count/sum(langfreq$count), 1)
+print(piepercent)
+print(langfreq$count)
+print(langfreq$region)
 
+# I used the Brewer color package to give me more color selection in my visualizations
+display.brewer.all()
+brewer.pal(n = 8, name = 'BuGn')
 
-print(regionspie)
+#Below I create the pie chart and legend. 
+regionspie <-pie(piepercent, labels = piepercent, clockwise = TRUE, radius = .5, main="Pie Chart of Region Frequencies by Percent", col=brewer.pal(n=5, name ="BuGn"))
+legend("topright", c("Central Asia", "Eastern Europe", "Middle East", "US and UK", "Western Europe"), fill=brewer.pal(n=5, name = "BuGn"))
 
 
 ## Back to the other parts of the analysis...
@@ -263,7 +280,8 @@ dft %>% filter(ukr == TRUE) %>% group_by(year) %>% tally()
 
 #Below, I group the dataframe by year acros each dummy variable 
 dft %>% group_by(year) %>% tally()
-dft_year <-dft %>% group_by(year) %>% tally()
+#Here is define dft_year as the grouping for Ukraine only 
+dft_year <-dft %>% filter(ukr == TRUE) %>% group_by(year) %>% tally()
 
 
 ####----DATA VISUALIZATION ---- this is indicating the number of times Ukraine was mentioned in a disinformation article each year since 2015. 
@@ -275,3 +293,16 @@ ukrainetime<-ggplot(data=dft_year, aes(x=dft_year$year, y=dft_year$n)) +
 newukrainetime <- ukrainetime + ggtitle("Disinformation Articles About Ukraine by Year") +
   xlab("Year (2015-2019)") + ylab("Number of Articles") 
 print(newukrainetime)
+
+#Now, to see if there is a trend of increasing disinformation articles over time, I look at some target languages that have likely been monitored since 2015. I see if there is an increasing trend. 
+
+#dft %>% group_by(year) %>% tally()
+#Here I do the same thing I did for Ukraine here for articles printed in English
+#dft_arabic <- dft %>% filter(arabic == TRUE) %>% group_by(year) %>% tally()
+
+#arabictime<-ggplot(data=dft_arabic, aes(x=dft_arabic$year, y=dft_arabic$n)) +
+  #geom_bar(stat="identity", fill="steelblue")+
+  #theme_minimal()
+
+#print(arabictime)
+
