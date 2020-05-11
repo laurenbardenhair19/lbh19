@@ -4,7 +4,7 @@
 library(hash)
 
 #load the data from previous script
-load("./resultsflat_data.RData")
+load("./results/flat_data.RData")
 
 ###COUNTING - Now we want to know how many times a keyword, location, or language is used across all claim observations, in aggregate. 
 
@@ -113,7 +113,7 @@ for (lang in keys(langcount)) {
 }
 
 
-load(keywordcount, file="./results/keywordcount.RData")
-load(langcount, file="./results/langcount.RData")
-load(flat_data, file="./results/flat_data.RData")
+save(keywordcount, file="./results/keywordcount.RData")
+save(langcount, file="./results/langcount.RData")
+save(flat_data, file="./results/flat_data.RData")
 

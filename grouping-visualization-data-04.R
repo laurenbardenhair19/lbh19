@@ -81,7 +81,7 @@ langcountdata <- data.frame("lang" = keys(langcount), "count" = values(langcount
 
 #Again, assigns a region name to langcountdata$lang, if the language is in one of the defined regions above
 langcountdata[langcountdata$lang %in% MiddleEastLanguages, "region"] <- "Middle East"
-langcountdata[langcountdata$lang %in% EuropeanLanguages, "region"] <- "Western Europe"
+langcountdata[langcountdata$lang %in% WesternEuropeanLanguages, "region"] <- "Western Europe"
 langcountdata[langcountdata$lang %in% EasternEuropeanLanguages , "region"] <- "Eastern Europe"
 langcountdata[langcountdata$lang %in% USandUK , "region"] <- "USA UK"
 langcountdata[langcountdata$lang %in% CentralAsiaLanguages , "region"] <- "Central Asia"
@@ -171,6 +171,7 @@ dft_year_all <-dft  %>% group_by(year) %>% tally()
 
 #I then visualize the results with a histogram
 
+#This one is a test, will add labels below 
 Frequency_all<-ggplot(data=dft_year_all, aes(x=year, y=n)) +
   geom_bar(stat="identity", fill="lightgray")+
   theme_minimal()
