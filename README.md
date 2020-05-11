@@ -33,9 +33,9 @@ For cleaning, analysis, and visualization, the following packages are needed.
 
 Code\
 This repository contains three files for my code
-1. collect-flatten-data.R             Loads data fron EUvsDisinfo API and flattens it. Changes ID#s to strings 
-2. counting-data.R                    Functions loop through each observation tallying times each outcome used
-3. grouping-visualization-data.R      Group all outcomes (keywords, lang area, year) for analysis. Visualizations.
+1. collect-flatten-data-01.R             Loads data fron EUvsDisinfo API and flattens it. Changes ID#s to strings 
+2. counting-data-02.R                    Functions loop through each observation tallying times each outcome used
+3. grouping-visualization-data-03.R      Group all outcomes (keywords, lang area, year) for analysis. Visualizations.
 
 Data\
 EUvsDisinfo website. This represents the data collection of a disinformation task force based in Europe. 
