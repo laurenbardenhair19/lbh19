@@ -48,10 +48,10 @@ Dataset began in 2015 and is updated weekly. https://euvsdisinfo.eu/
 4. langcount.RData has the saved languages and tallies 
 
 ### Results\
-1. pie_regions.png     percentage of regional publication languages as percentage of all publications\\
-2. pie_topics.png               percentage of topic keywords as percentage of all general topics\\
-3. ukraine.png           number of times Ukraine is a keyword in each year \\
-4. frequency_all.png                number of total claims in each year 
+1. pie_regions.png             percentage of regional publication languages as percentage of all publications
+2. pie_topics.png               percentage of topic keywords as percentage of all general topics
+3. ukraine.png                  number of times Ukraine is a keyword in each year 
+4. frequency_all.png             number of total claims in each year 
 
 
 
