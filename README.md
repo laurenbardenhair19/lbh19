@@ -42,8 +42,8 @@ This repository contains four files for my code
 EUvsDisinfo website. This represents the data collection of a disinformation task force based in Europe. 
 Dataset began in 2015 and is updated weekly. https://euvsdisinfo.eu/
 
-1. alldata.RData is the data broad directly from the API 
-2. flat_data.RData is the saved data after it has been flattened and merged
+1. alldata.RData is the data directly from the API 
+2. flat_data.RData is the saved data after it has been flattened, cleaned, and merged
 3. keywordcount.RData has the saved keywords and tallies
 4. langcount.RData has the saved languages and tallies 
 
