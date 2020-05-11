@@ -32,7 +32,7 @@ For cleaning, analysis, and visualization, the following packages are needed.
 
 
 ### Code\
-This repository contains three files for my code
+This repository contains four files for my code
 1. download-data-01.R  Loads data fron EUvsDisinfo API
 2. process-data-02.R             Flattens the data and changes ID#s to strings 
 3. counting-data-03.R                   Loops through each observation tallying times each outcome 
