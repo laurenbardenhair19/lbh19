@@ -109,4 +109,4 @@ flat_data$languages <- lapply(flat_data$creativeworks_ids, convert_creativeworks
 flat_data$all_languages <- unlist(flat_data$languages)
 
 #save the flat data
-save(flat_data, file = "./results/flat_data.RData")
+save(flat_data, file = "./data/flat_data.RData")

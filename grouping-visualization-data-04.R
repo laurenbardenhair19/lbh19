@@ -12,9 +12,9 @@ library(ggplot2)
 library(RColorBrewer)
 
 
-load("./results/keywordcount.RData")
-load("./results/langcount.RData")
-load("./results/flat_data.RData")
+load("./data/keywordcount.RData")
+load("./data/langcount.RData")
+load("./data/flat_data.RData")
 
 ####------GROUPING THE DATA-----####
 
@@ -64,9 +64,11 @@ brewer.pal(n = 8, name = 'Paired')
 
 
 #Here I generate a pie chart with labels and a legend included. 
+
+png("./results/pie_topics.png", width = 500, height = 500)
 topicspie <-pie(piepercentt, labels = piepercentt, clockwise = TRUE, radius = .5, main="Pie Chart of Topic Frequencies by Percent", col=brewer.pal(n=8, name ="Paired"))
 legend("bottomright", c("Eastern Europe", "Elections", "EU NATO", "Revisionist History", "Russia", "Syria and the Middle East", "Ukraine", "US"), fill=brewer.pal(n=8, name = "Paired"), cex=.7) 
-
+dev.off()
 
 ## ----(LANGUGAGES) Again there are too many languages here, so I will group them by region. This will allow me to look at which areas of the world are targeted the most.
 
@@ -109,8 +111,10 @@ display.brewer.all()
 brewer.pal(n = 8, name = 'BuGn')
 
 #Below I create the pie chart with labels and legend. 
+png("./results/pie_regions.png", width = 500, height = 500)
 regionspie <-pie(piepercent, labels = piepercent, clockwise = TRUE, radius = .5, main="Pie Chart of Region Frequencies by Percent", col=brewer.pal(n=5, name ="BuGn"))
 legend("topright", c("Central Asia", "Eastern Europe", "Middle East", "US and UK", "Western Europe"), fill=brewer.pal(n=5, name = "BuGn"))
+dev.off()
 
 
 ### ---ANALYSIS BY YEAR----- Now I want to look at frequencies of all these variables over time ###
@@ -162,6 +166,7 @@ ukrainetime<-ggplot(data=dft_year, aes(x=year, y=n)) +
 newukrainetime <- ukrainetime + ggtitle("Disinformation Articles About Ukraine by Year") +
   xlab("Year (2015-2019)") + ylab("Number of Articles") 
 print(newukrainetime)
+ggsave("./results/ukraine.png")
 
 #Ukrainian elections took place in 2016 and 2019. Lines could be added to designate these dates but I don't think it's necessary here. 
 
@@ -175,8 +180,8 @@ dft_year_all <-dft  %>% group_by(year) %>% tally()
 Frequency_all<-ggplot(data=dft_year_all, aes(x=year, y=n)) +
   geom_bar(stat="identity", fill="lightgray")+
   theme_minimal()
-print(Frequency_all)
 
 allovertime <- Frequency_all + ggtitle("Number of Disinformation Articles Over Time") +
   xlab("Year (2015-2019)") + ylab("Number of Articles") 
 print(allovertime)
+ggsave("./results/frequency_all.png")
