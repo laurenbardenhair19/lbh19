@@ -36,7 +36,7 @@ This repository contains three files for my code
 1. download-data-01.R  Loads data fron EUvsDisinfo API
 2. process-data-02.R             Flattens the data and changes ID#s to strings 
 2. counting-data-03.R                   Loops through each observation tallying times each outcome 
-3. grouping-visualization-data-03.R      Groups outcomes (keywords, lang area, year) for analysis and visualization
+3. grouping-visualization-data-04.R      Groups outcomes (keywords, lang area, year) for analysis and visualization
 
 Data\
 EUvsDisinfo website. This represents the data collection of a disinformation task force based in Europe. 
