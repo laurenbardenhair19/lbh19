@@ -43,9 +43,9 @@ EUvsDisinfo website. This represents the data collection of a disinformation tas
 Dataset began in 2015 and is updated weekly. https://euvsdisinfo.eu/
 
 ### Results\
-pie_regions.png     percentage of regional publication languages as percentage of all publications
-pie_topics.png               percentage of topic keywords as percentage of all general topics
-ukraine.png           number of times Ukraine a keyword in each year 
+pie_regions.png     percentage of regional publication languages as percentage of all publications\\
+pie_topics.png               percentage of topic keywords as percentage of all general topics\\
+ukraine.png           number of times Ukraine is a keyword in each year \\
 frequency_all.png                number of total claims in each year 
 
 
