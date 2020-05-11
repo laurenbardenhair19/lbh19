@@ -31,18 +31,18 @@ For cleaning, analysis, and visualization, the following packages are needed.
 ## Files in this repository:
 
 
-Code\
+### Code\
 This repository contains three files for my code
 1. download-data-01.R  Loads data fron EUvsDisinfo API
 2. process-data-02.R             Flattens the data and changes ID#s to strings 
-2. counting-data-03.R                   Loops through each observation tallying times each outcome 
-3. grouping-visualization-data-04.R      Groups outcomes (keywords, lang area, year) for analysis and visualization
+3. counting-data-03.R                   Loops through each observation tallying times each outcome 
+4. grouping-visualization-data-04.R      Groups outcomes (keywords, lang area, year) for analysis and visualization
 
-Data\
+### Data\
 EUvsDisinfo website. This represents the data collection of a disinformation task force based in Europe. 
 Dataset began in 2015 and is updated weekly. https://euvsdisinfo.eu/
 
-Results\
+### Results\
 regional-language-target-01.jpg     percentage of regional publication languages as percentage of all publications
 keyword-target-02.jpg               percentage of topic keywords as percentage of all general topics
 ukraine-over-time-03.jpg            number of times Ukraine a keyword in each year 
