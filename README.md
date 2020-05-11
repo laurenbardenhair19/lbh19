@@ -1,5 +1,5 @@
 
-Short Description:
+##Short Description:
 
 This project loads data using the EUvsDisinfo API. It merges/flattens the data and cleans it for analysis. 
 It uses various functions to loop through each observation, tallying lists of outcomes associated with each 
@@ -10,7 +10,7 @@ categories are drawn up according to language region, topic, and year. The visua
 statistics associated with these groupings. 
 
 
-Dependencies/Installation:
+##Dependencies/Installation:
 
 I used RStudio Version 1.1.463
 
@@ -28,7 +28,7 @@ For cleaning, analysis, and visualization, the following packages are needed.
 #install.packages("ggplot2")
 
 
-Files in this repository:
+##Files in this repository:
 
 
 Code\
